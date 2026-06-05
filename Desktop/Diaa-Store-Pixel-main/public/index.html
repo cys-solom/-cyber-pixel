@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cyber Key — Automated Gemini subscription activation platform">
+    <title>Cyber Key — Gemini Pro Pixel Verify</title>
+    <link rel="icon" type="image/png" href="/assets/cyber-key-logo.png">
+    <link rel="shortcut icon" href="/assets/cyber-key-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="/assets/style.css" as="style">
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+    <!-- Animated Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Floating particles overlay -->
+    <div class="particles-overlay" id="particles-overlay"></div>
+
+    <div class="app-container">
+        <!-- ═══ NAVBAR ═══ -->
+        <nav class="navbar" id="navbar">
+            <a href="/" class="navbar-brand" onclick="event.preventDefault(); if(activeCDK){ switchTab('dashboard'); } else { window.location.href='/'; }">
+                <div class="logo-icon dragon-icon">
+                    <img src="/assets/cyber-key-logo.png" alt="Cyber Key" class="dragon-img" id="nav-logo-img">
+                </div>
+                <span class="brand-text" id="nav-brand-text">Cyber Key <span class="brand-sub" id="nav-brand-sub">Pixel Verify</span></span>
+            </a>
+            <div class="navbar-actions">
+                <div class="stock-badge" id="stock-badge"><span class="stock-dot"></span> <span id="stock-text">Loading...</span></div>
+            </div>
+        </nav>
+
+        <!-- ═══ ANNOUNCEMENT BAR ═══ -->
+        <div class="announcement-bar" id="announcement-bar" style="display:none;">
+            <div class="announcement-inner">
+                <span class="announcement-badge">📢 Announcement</span>
+                <div class="announcement-scroll">
+                    <span class="announcement-text" id="announcement-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FIXED ANNOUNCEMENT ═══ -->
+        <div class="announcement-fixed" id="announcement-fixed" style="display:none;">
+            <div class="announcement-fixed-inner">
+                <span class="announcement-fixed-badge">📌 Notice</span>
+                <p class="announcement-fixed-text" id="announcement-fixed-text"></p>
+            </div>
+        </div>
+
+        <div class="main-content">
+
+            <!-- ═══════════════════════════════════════════
+                 HERO SECTION (Before Login)
+            ════════════════════════════════════════════ -->
+            <div id="cdk-hero-section">
+                <div class="hero-wrapper">
+                    <div class="hero-inner">
+
+                        <!-- Logo with glow ring -->
+                        <div class="hero-logo-wrap">
+                            <div class="hero-logo-ring"></div>
+                            <img src="/assets/cyber-key-logo.png" alt="Cyber Key" class="hero-logo-img" id="hero-logo-img">
+                        </div>
+
+                        <!-- Title -->
+                        <h1 class="hero-title">
+                            <span class="hero-title-main" id="hero-title-main">Cyber Key</span>
+                            <span class="hero-title-sub" id="hero-title-sub">Gemini Pro · Pixel Verify</span>
+                        </h1>
+
+                        <p class="hero-desc" id="hero-desc">
+                            Automated Gemini Advanced subscription activation platform for resellers.
+                        </p>
+
+                        <!-- Price badge -->
+                        <div class="hero-price-badge">
+                            <span class="hero-price-icon">⚡</span>
+                            <span id="hero-price">—</span>
+                            <span class="hero-price-label">$ per point</span>
+                        </div>
+
+                        <!-- ─── CDK Input ─── -->
+                        <div class="cdk-card">
+                            <div class="cdk-card-inner">
+                                <div class="cdk-input-wrap">
+                                    <span class="cdk-key-icon">🔑</span>
+                                    <input type="text"
+                                           class="cdk-input"
+                                           id="cdk-input"
+                                           placeholder="Enter your CDK code..."
+                                           autocomplete="off"
+                                           spellcheck="false"
+                                           oninput="onCDKInput(event)"
+                                           onkeydown="if(event.key==='Enter')activateCDK()">
+                                </div>
+                                <button class="cdk-btn" id="cdk-activate-btn" onclick="activateCDK()">
+                                    <span id="activate-text">Activate</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ─── Create Account ─── -->
+                        <div class="create-account-section">
+                            <div class="create-divider"><span>New here?</span></div>
+                            <button class="create-account-btn" onclick="showCreateAccountModal()">
+                                <span class="create-account-btn-icon">✦</span>
+                                Create Free Account
+                            </button>
+                        </div>
+
+                        <!-- ─── Contact ─── -->
+                        <div class="hero-contact">
+                            <a href="https://t.me/Cyberr_exe" target="_blank" class="contact-admin-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                                @Cyberr_exe — Telegram
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 CREATE ACCOUNT MODAL
+            ════════════════════════════════════════════ -->
+            <div id="create-account-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;">
+                <div class="modal-card">
+                    <button onclick="hideCreateAccountModal()" class="modal-close-btn">✕</button>
+
+                    <div class="modal-logo">
+                        <div class="modal-logo-icon">✦</div>
+                    </div>
+                    <h2 class="modal-title">Create Free Account</h2>
+                    <p class="modal-subtitle">Get your personal CDK key instantly — deposit points to start using the service</p>
+
+                    <div id="create-form-view">
+                        <div class="form-group" style="margin-bottom:20px;">
+                            <label>Your Name / Nickname</label>
+                            <input type="text" id="create-name-input" maxlength="12"
+                                   placeholder="e.g. JOHN or STORE1"
+                                   class="form-control"
+                                   style="text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace;font-size:16px;text-align:center;"
+                                   onkeydown="if(event.key==='Enter')doCreateAccount()">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:6px;text-align:center;">Letters and numbers only · Max 12 chars · Becomes part of your CDK</div>
+                        </div>
+
+                        <div id="create-error" style="display:none;padding:10px 14px;background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.2);border-radius:8px;font-size:13px;color:var(--red);margin-bottom:14px;"></div>
+
+                        <button onclick="doCreateAccount()" id="create-account-btn" class="hero-create-submit-btn">
+                            Create My Account
+                        </button>
+
+                        <div style="text-align:center;margin-top:14px;">
+                            <span style="font-size:12px;color:var(--text-muted);">Already have a CDK? Just enter it above and click Activate</span>
+                        </div>
+                    </div>
+
+                    <div id="create-success-view" style="display:none;text-align:center;">
+                        <div style="font-size:52px;margin-bottom:12px;">🎉</div>
+                        <h3 style="color:var(--success);font-size:20px;margin:0 0 8px;font-weight:800;">Account Created!</h3>
+                        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px;">Your CDK key has been created. <strong>Save it now</strong> — it cannot be recovered if lost.</p>
+                        <div class="created-cdk-box">
+                            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Your CDK Key</div>
+                            <div id="created-cdk-code" style="font-size:22px;font-weight:900;color:var(--cyan);letter-spacing:3px;font-family:'JetBrains Mono',monospace;"></div>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-bottom:16px;">
+                            <button onclick="copyCreatedCDK()" class="btn btn-cyan" style="flex:1;">📋 Copy Key</button>
+                            <button onclick="activateCreatedCDK()" class="btn btn-primary" style="flex:1;">⚡ Activate Now</button>
+                        </div>
+                        <div style="padding:10px 14px;background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.2);border-radius:8px;font-size:12px;color:var(--amber);">
+                            ⚠️ Write down your CDK key. It cannot be recovered if lost.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 DASHBOARD (After CDK Activation)
+            ════════════════════════════════════════════ -->
+            <div id="dashboard-section" style="display:none;">
+                <!-- Active CDK Bar -->
+                <div class="cdk-bar">
+                    <div class="cdk-bar-left">
+                        <span class="cdk-bar-label">Active CDK:</span>
+                        <code class="cdk-bar-code" id="active-cdk-display"></code>
+                        <button class="copy-btn" onclick="copyText(activeCDK)" title="Copy">📋</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button class="deposit-header-btn" onclick="switchTab('deposit')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            Deposit
+                        </button>
+                        <button class="btn btn-ghost btn-sm" onclick="logout()" style="font-size:11px;">Change CDK</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid" id="stats-grid"></div>
+
+                <!-- Tabs -->
+                <div class="tabs" id="dashboard-tabs"></div>
+
+                <!-- Tab Content -->
+                <div id="tab-content"></div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <footer class="site-footer">
+            <span>© 2026 Cyber Key — Gemini Pro Pixel Verify. All rights reserved.</span>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/i18n.js"></script>
+    <script src="/assets/background.js"></script>
+    <script src="/assets/merchant.js"></script>
+</body>
+</html>
