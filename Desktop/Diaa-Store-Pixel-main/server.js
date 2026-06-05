@@ -10,8 +10,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Static files — serve with correct MIME types (critical for Vercel)
+const publicDir = path.join(__dirname, 'public');
+app.use(express.static(publicDir, {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css'))  res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        if (filePath.endsWith('.js'))   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        if (filePath.endsWith('.png'))  res.setHeader('Content-Type', 'image/png');
+        if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) res.setHeader('Content-Type', 'image/jpeg');
+        if (filePath.endsWith('.svg'))  res.setHeader('Content-Type', 'image/svg+xml');
+        if (filePath.endsWith('.ico'))  res.setHeader('Content-Type', 'image/x-icon');
+        if (filePath.endsWith('.woff2')) res.setHeader('Content-Type', 'font/woff2');
+        // Cache static assets
+        if (!filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+        }
+    }
+}));
 
 // Routes
 const adminRoutes = require('./routes/admin');
