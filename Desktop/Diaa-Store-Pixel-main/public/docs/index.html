@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation — Diaa Store Pixel Verify</title>
+    <title>API Documentation — Cyber Key</title>
     <link rel="stylesheet" href="/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
@@ -24,7 +24,7 @@
         <nav class="navbar">
             <a href="/" class="navbar-brand">
                 <div class="logo-icon">⚡</div>
-                <span class="brand-text">Diaa Store Pixel Verify</span>
+                <span class="brand-text">Cyber Key — Pixel Verify</span>
             </a>
             <a href="/" class="btn btn-ghost btn-sm">← Back to Dashboard</a>
         </nav>
@@ -53,7 +53,7 @@
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Check remaining points for your CDK code.</p>
                     <h4 style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">REQUEST</h4>
-                    <pre>{ "cdkey": "DS-A7X9K2B4" }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4" }</pre>
                     <h4 style="font-size:13px;color:var(--text-muted);margin:16px 0 8px;">RESPONSE</h4>
                     <pre>{ "success": true, "remaining_uses": 45.0 }</pre>
                 </div>
@@ -86,7 +86,7 @@
                 <div class="card-header"><h3><span class="api-method post">POST</span><span class="api-endpoint">/api/v1/status</span></h3></div>
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Check order status.</p>
-                    <pre>{ "cdkey": "DS-A7X9K2B4", "order_id": 1024 }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4", "order_id": 1024 }</pre>
                     <h4 style="font-size:13px;color:var(--text-muted);margin:16px 0 8px;">RESPONSE</h4>
                     <pre>{
   "success": true,
@@ -109,7 +109,7 @@
                 <div class="card-header"><h3><span class="api-method post">POST</span><span class="api-endpoint">/api/v1/cancel</span></h3></div>
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Cancel a pending order (points refunded).</p>
-                    <pre>{ "cdkey": "DS-A7X9K2B4", "order_id": 1024 }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4", "order_id": 1024 }</pre>
                     <h4 style="font-size:13px;color:var(--text-muted);margin:16px 0 8px;">RESPONSE</h4>
                     <pre>{ "success": true, "message": "Order cancelled and points refunded", "remaining_uses": 45.0 }</pre>
                 </div>
@@ -120,7 +120,7 @@
                 <div class="card-header"><h3><span class="api-method post">POST</span><span class="api-endpoint">/api/v1/purchase_link</span></h3></div>
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Buy activation link from a failed order (costs 1 point).</p>
-                    <pre>{ "cdkey": "DS-A7X9K2B4", "order_id": 1024 }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4", "order_id": 1024 }</pre>
                     <h4 style="font-size:13px;color:var(--text-muted);margin:16px 0 8px;">RESPONSE</h4>
                     <pre>{
   "success": true,
@@ -135,7 +135,7 @@
                 <div class="card-header"><h3><span class="api-method post">POST</span><span class="api-endpoint">/api/v1/orders</span></h3></div>
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Get all your orders (optional filter by status).</p>
-                    <pre>{ "cdkey": "DS-A7X9K2B4", "status": "success" }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4", "status": "success" }</pre>
                 </div>
             </div>
 
@@ -144,7 +144,7 @@
                 <div class="card-header"><h3><span class="api-method post">POST</span><span class="api-endpoint">/api/v1/webhook</span></h3></div>
                 <div class="card-body">
                     <p style="color:var(--text-secondary);margin-bottom:16px;">Set webhook URL for order status notifications.</p>
-                    <pre>{ "cdkey": "DS-A7X9K2B4", "webhook_url": "https://your-bot.com/hook" }</pre>
+                    <pre>{ "cdkey": "CK-A7X9K2B4", "webhook_url": "https://your-bot.com/hook" }</pre>
                     <h4 style="font-size:13px;color:var(--text-muted);margin:16px 0 8px;">WEBHOOK PAYLOAD</h4>
                     <pre>{
   "event": "order.updated",
@@ -170,7 +170,7 @@
                     <pre>import requests
 
 API = "https://your-domain.com/api/v1"
-CDK = "DS-A7X9K2B4"
+CDK = "CK-A7X9K2B4"
 
 # Submit order
 r = requests.post(f"{API}/submit", json={
@@ -187,7 +187,7 @@ print(r.json())</pre>
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-        cdkey: 'DS-A7X9K2B4',
+        cdkey: 'CK-A7X9K2B4',
         email: 'user@gmail.com',
         password: 'pass123',
         task_type: 'full'
@@ -198,13 +198,13 @@ console.log(await res.json());</pre>
                     <h4 style="font-size:13px;color:var(--accent-cyan-light);margin:24px 0 8px;">cURL</h4>
                     <pre>curl -X POST https://your-domain.com/api/v1/submit \
   -H "Content-Type: application/json" \
-  -d '{"cdkey":"DS-A7X9K2B4","email":"user@gmail.com","password":"pass123","task_type":"full"}'</pre>
+  -d '{"cdkey":"CK-A7X9K2B4","email":"user@gmail.com","password":"pass123","task_type":"full"}'</pre>
                 </div>
             </div>
         </div>
 
         <footer style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;border-top:1px solid var(--border);">
-            © 2026 Diaa Store Pixel Verify. All rights reserved.
+            © 2026 Cyber Key — Gemini Pro Pixel Verify. All rights reserved.
         </footer>
     </div>
 

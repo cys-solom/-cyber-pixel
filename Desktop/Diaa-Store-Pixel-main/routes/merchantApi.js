@@ -335,12 +335,12 @@ router.post('/deposit', async (req, res) => {
     const rateSetting = await db.getSetting('deposit_rate');
     const pricePerPoint = rateSetting ? parseFloat(rateSetting.value) : 1;
     const points = Math.floor(amount / pricePerPoint);
-    // Generate unique note like "DS-A7X4"
+    // Generate unique note like "CK-A7X4"
     const noteChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let noteCode = '';
     for (let i = 0; i < 4; i++) noteCode += noteChars[Math.floor(Math.random() * noteChars.length)];
-    const note = `DS-${noteCode}`;
-    const tradeNo = `DS-${cdk.id}-${Date.now()}`;
+    const note = `CK-${noteCode}`;
+    const tradeNo = `CK-${cdk.id}-${Date.now()}`;
 
     await db.insertDeposit(cdk.id, tradeNo, amount, points, 'pending', '', '', note);
     await db.insertLog(cdk.id, null, 'deposit_created', `Deposit request $${amount} USDT → ${points} points [note: ${note}]`);

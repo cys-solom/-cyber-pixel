@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 /**
  * Generate a unique CDK code for the platform
- * Format: DS-XXXXXXXX (8 alphanumeric chars)
+ * Format: CK-XXXXXXXX (8 alphanumeric chars)
  * @param {string} prefix - Code prefix (default: 'DS')
  * @returns {string} Generated CDK code
  */
