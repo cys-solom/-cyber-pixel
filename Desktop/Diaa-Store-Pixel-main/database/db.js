@@ -113,7 +113,11 @@ async function getPlatformCDKByCode(code, status) {
 }
 async function insertPlatformCDK(code, label, totalPoints, remainingPoints, sourceId) {
     const { data, error } = await supabase.from('platform_cdks').insert({
-        code: code.toUpperCase(), label, total_points: totalPoints, remaining_points: remainingPoints, source_cdkey_id: sourceId
+        code: code.toUpperCase(),
+        label,
+        total_points:     parseInt(totalPoints)     || 0,
+        remaining_points: parseInt(remainingPoints) || 0,
+        source_cdkey_id:  sourceId
     }).select().single();
     if (error) throw error;
     return data;
