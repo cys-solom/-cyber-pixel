@@ -122,17 +122,16 @@ if (!localStorage.getItem('activeCDK')) loadAnnouncement();
 
 // ===== Site Info (Stock + Price + Branding) =====
 let siteHasStock = true;
-async function loadSiteInfo() {
-    try {
-        const res = await fetch('/api/site-info');
-        const data = await res.json();
-        const badge = document.getElementById('stock-badge');
-        const text = document.getElementById('stock-text');
-        const priceEl = document.getElementById('hero-price');
 
-        siteHasStock = data.has_stock;
-        const pointsAvailable = Math.floor((data.credits || 0) * 2);
-
+function applySiteInfo(data) {
+    if (!data) return;
+    window._siteInfo = data;
+    siteHasStock = data.has_stock;
+    const badge   = document.getElementById('stock-badge');
+    const text    = document.getElementById('stock-text');
+    const priceEl = document.getElementById('hero-price');
+    const pointsAvailable = Math.floor((data.credits || 0) * 2);
+    if (badge && text) {
         if (data.has_stock) {
             badge.className = 'stock-badge online';
             text.textContent = pointsAvailable + ' pts available';
@@ -140,27 +139,37 @@ async function loadSiteInfo() {
             badge.className = 'stock-badge offline';
             text.textContent = 'Out of Stock';
         }
+    }
+    if (priceEl && data.point_price != null) {
+        priceEl.textContent = '$' + parseFloat(data.point_price).toFixed(2);
+    }
+    const b = data.branding || {};
+    if (b.brand_name) {
+        const brandEl = document.getElementById('nav-brand-text');
+        if (brandEl) brandEl.innerHTML = b.brand_name + (b.brand_subtitle ? ' <span class="brand-sub">' + b.brand_subtitle + '</span>' : '');
+    }
+    if (b.hero_title)       { const el = document.getElementById('hero-title-main'); if (el) el.textContent = b.hero_title; }
+    if (b.hero_subtitle)    { const el = document.getElementById('hero-title-sub');  if (el) el.textContent = b.hero_subtitle; }
+    if (b.hero_description) { const el = document.getElementById('hero-desc');       if (el) el.textContent = b.hero_description; }
+    if (b.logo_url) { document.querySelectorAll('.dragon-img,.hero-dragon-img,.hero-logo-img').forEach(img => img.src = b.logo_url); }
+}
 
-        if (priceEl && data.point_price) {
-            priceEl.textContent = '$' + data.point_price.toFixed(2);
-        }
-
-        // Apply branding
-        const b = data.branding || {};
-        if (b.brand_name) {
-            const brandEl = document.getElementById('nav-brand-text');
-            const subEl = document.getElementById('nav-brand-sub');
-            if (brandEl) brandEl.innerHTML = b.brand_name + (b.brand_subtitle ? ' <span class="brand-sub" id="nav-brand-sub">' + b.brand_subtitle + '</span>' : '');
-        }
-        if (b.hero_title) { const el = document.getElementById('hero-title-main'); if (el) el.textContent = b.hero_title; }
-        if (b.hero_subtitle) { const el = document.getElementById('hero-title-sub'); if (el) el.textContent = b.hero_subtitle; }
-        if (b.hero_description) { const el = document.getElementById('hero-desc'); if (el) el.textContent = b.hero_description; }
-        if (b.logo_url) {
-            document.querySelectorAll('.dragon-img, .hero-dragon-img').forEach(img => img.src = b.logo_url);
-        }
+async function loadSiteInfo() {
+    // Step 1: Show cached data INSTANTLY (zero delay on repeat visits)
+    try {
+        const cached = localStorage.getItem('_siteInfoCache');
+        if (cached) applySiteInfo(JSON.parse(cached));
+    } catch(e) {}
+    // Step 2: Fetch fresh data in background
+    try {
+        const res  = await fetch('/api/site-info');
+        const data = await res.json();
+        localStorage.setItem('_siteInfoCache', JSON.stringify(data));
+        applySiteInfo(data);
     } catch(e) {}
 }
 loadSiteInfo();
+setInterval(loadSiteInfo, 60000);
 
 // ===== Toast =====
 function showToast(message, type = 'info') {
