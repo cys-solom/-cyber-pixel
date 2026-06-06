@@ -415,16 +415,20 @@ async function confirmDeleteCDK(id, btn) {
 }
 
 // ===== ORDERS =====
-async function renderOrders(main) {
-    const data = await adminApi('GET', '/orders');
+async function renderOrders(main, query = '') {
+    const data = await adminApi('GET', '/orders' + (query ? '?q=' + encodeURIComponent(query) : ''));
     const orders = data.orders || [];
     main.innerHTML = `
     <div class="page-header"><h1>Orders (${orders.length})</h1>
-        <button class="btn btn-ghost btn-sm" onclick="loadPage('orders')">↻ Refresh</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="order-search" class="form-control" placeholder="Search orders..." value="${query.replace(/"/g, '&quot;')}" style="width:200px;height:32px;font-size:12px;padding:4px 8px;">
+            <button class="btn btn-primary btn-sm" onclick="doOrderSearch()">Search</button>
+            <button class="btn btn-ghost btn-sm" onclick="loadPage('orders')">↻ Refresh</button>
+        </div>
     </div>
     <div class="card"><div class="card-body"><div class="table-wrapper">
-        <table><thead><tr><th>#</th><th>CDK</th><th>Email</th><th>Type</th><th>Pts</th><th>Status</th><th>Message</th><th>Time</th></tr></thead><tbody>
-        ${orders.length === 0 ? '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No orders</td></tr>' :
+        <table><thead><tr><th>#</th><th>CDK</th><th>Email</th><th>Type</th><th>Pts</th><th>Status</th><th>Remote ID</th><th>Message</th><th>Time</th><th style="width:130px;">Actions</th></tr></thead><tbody>
+        ${orders.length === 0 ? '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted);">No orders found</td></tr>' :
         orders.map(o => `<tr>
             <td>${o.id}</td>
             <td><code style="font-size:10px;">${o.cdk_code || '—'}</code></td>
@@ -432,11 +436,62 @@ async function renderOrders(main) {
             <td>${o.task_type}</td>
             <td style="color:var(--warning);font-weight:600;">${o.charged_points}</td>
             <td><span class="badge badge-${o.status}">${o.status}</span></td>
-            <td style="max-width:180px;font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;">${o.result_message || '—'}</td>
+            <td><code style="font-size:11px;">${o.remote_task_id || '—'}</code></td>
+            <td style="max-width:180px;font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;" title="${(o.result_message || '').replace(/"/g, '&quot;')}">${o.result_message || '—'} ${o.offer_url ? `<br><a href="${o.offer_url}" target="_blank" style="color:var(--accent-cyan-light);font-size:10px;text-decoration:none;">🔗 Link</a>` : ''}</td>
             <td style="font-size:10px;color:var(--text-muted);">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</td>
+            <td>
+                <div style="display:flex;gap:4px;">
+                    ${o.remote_task_id ? `<button class="btn btn-cyan btn-sm" onclick="adminFetchOrderLink(${o.id})" title="Fetch status from remote API" style="padding:2px 6px;font-size:10px;">Fetch</button>` : ''}
+                    <button class="btn btn-success btn-sm" onclick="adminSetOrderLink(${o.id})" title="Manually set offer URL" style="padding:2px 6px;font-size:10px;">Set Link</button>
+                </div>
+            </td>
         </tr>`).join('')}
         </tbody></table>
     </div></div></div>`;
+
+    // Add search on Enter key
+    const searchInput = document.getElementById('order-search');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') doOrderSearch();
+        });
+    }
+}
+
+function doOrderSearch() {
+    const q = document.getElementById('order-search').value;
+    const main = document.getElementById('admin-main');
+    renderOrders(main, q);
+}
+
+async function adminFetchOrderLink(orderId) {
+    showToast('Fetching status from remote API...', 'info');
+    const res = await adminApi('POST', '/orders/' + orderId + '/fetch-link');
+    if (res.success) {
+        if (res.offer_url) {
+            showToast('✅ Link fetched successfully: ' + res.offer_url, 'success');
+        } else {
+            showToast('⚠️ Status updated: ' + (res.message || 'No link yet'), 'warning');
+        }
+        loadPage('orders');
+    } else {
+        showToast(res.error || 'Failed to fetch link', 'error');
+    }
+}
+
+async function adminSetOrderLink(orderId) {
+    const url = prompt('Enter the manually resolved Offer URL for this order:');
+    if (url === null) return; // cancelled prompt
+    if (!url.trim()) return showToast('Offer URL cannot be empty', 'error');
+    
+    showToast('Setting manual link...', 'info');
+    const res = await adminApi('POST', '/orders/' + orderId + '/set-link', { offer_url: url.trim() });
+    if (res.success) {
+        showToast('✅ Link set successfully!', 'success');
+        loadPage('orders');
+    } else {
+        showToast(res.error || 'Failed to set link', 'error');
+    }
 }
 
 // ===== ACTIVITY =====

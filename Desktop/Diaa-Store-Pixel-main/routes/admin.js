@@ -230,6 +230,20 @@ router.post('/orders/:id/fetch-link', adminAuth, async (req, res) => {
         else if (remoteStatus === 'failed' || remoteStatus === 'error') newStatus = 'failed';
         else if (remoteStatus === 'running' || remoteStatus === 'processing') newStatus = 'running';
 
+        let chargeNeeded = false;
+        if (newStatus === 'success' && ['failed', 'cancelled'].includes(order.status)) {
+            chargeNeeded = true;
+        }
+
+        if (chargeNeeded) {
+            const currentCdk = await db.getPlatformCDK(order.cdk_id);
+            if (currentCdk) {
+                const newBalance = currentCdk.remaining_points - order.charged_points;
+                await db.updatePlatformCDKPoints(newBalance, order.cdk_id);
+                await db.insertLog(order.cdk_id, order.id, 'recharge', `Charged ${order.charged_points} points because order was marked SUCCESS after refund`);
+            }
+        }
+
         await db.updateOrderStatus(newStatus, message, offerUrl, hasOfferUrl, order.id);
         await db.insertLog(order.cdk_id, order.id, 'admin_fetch_link', `Admin re-fetched link for order #${order.id} — status: ${newStatus}, has_url: ${hasOfferUrl}`);
 
@@ -245,6 +259,20 @@ router.post('/orders/:id/set-link', adminAuth, async (req, res) => {
     if (!offer_url) return res.status(400).json({ success: false, error: 'offer_url is required' });
     const order = await db.getOrder(req.params.id);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found' });
+
+    let chargeNeeded = false;
+    if (['failed', 'cancelled'].includes(order.status)) {
+        chargeNeeded = true;
+    }
+
+    if (chargeNeeded) {
+        const currentCdk = await db.getPlatformCDK(order.cdk_id);
+        if (currentCdk) {
+            const newBalance = currentCdk.remaining_points - order.charged_points;
+            await db.updatePlatformCDKPoints(newBalance, order.cdk_id);
+            await db.insertLog(order.cdk_id, order.id, 'recharge', `Charged ${order.charged_points} points because order was marked SUCCESS after refund`);
+        }
+    }
 
     await db.updateOrderStatus('success', order.result_message || 'Manually resolved by admin', offer_url, true, order.id);
     await db.insertLog(order.cdk_id, order.id, 'admin_set_link', `Admin manually set offer_url for order #${order.id}`);

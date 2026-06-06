@@ -231,6 +231,20 @@ router.post('/fetch-link', async (req, res) => {
 
         // Update the order if we got new info
         if (offerUrl || newStatus !== order.status) {
+            let chargeNeeded = false;
+            if (newStatus === 'success' && ['failed', 'cancelled'].includes(order.status)) {
+                chargeNeeded = true;
+            }
+
+            if (chargeNeeded) {
+                const currentCdk = await db.getPlatformCDK(cdk.id);
+                if (currentCdk) {
+                    const newBalance = currentCdk.remaining_points - order.charged_points;
+                    await db.updatePlatformCDKPoints(newBalance, cdk.id);
+                    await db.insertLog(cdk.id, order.id, 'recharge', `Charged ${order.charged_points} points because order was marked SUCCESS after refund`);
+                }
+            }
+
             await db.updateOrderStatus(newStatus, message, offerUrl, hasOfferUrl, order.id);
             await db.insertLog(cdk.id, order.id, 'fetch_link', `Merchant re-fetched link for order #${order.id} — status: ${newStatus}, has_url: ${hasOfferUrl}`);
         }
